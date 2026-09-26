@@ -35,7 +35,7 @@ import {
   encodeLino,
   decodeLino,
   exportJsonl,
-} from '@link-assistant/conversation';
+} from '@link-assistant/conversation/conversation';
 
 const graph = importJsonl(codexSession, 'codex');
 const saved = encodeLino(graph);
