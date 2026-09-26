@@ -194,6 +194,16 @@ describe('portable conversation graph', () => {
     expect(() => decodeBinary(new Uint8Array([1, 2, 3]))).toThrow();
   });
 
+  it('reports the physical line number of malformed JSONL', () => {
+    let error;
+    try {
+      importJsonl('\n{bad json}', 'codex');
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error.message.includes('line 2')).toBe(true);
+  });
+
   it('rejects reply links that point backward in record order', () => {
     const graph = createConversation('conversation-1');
     const first = appendMessage(graph, { role: 'user', content: 'First' });

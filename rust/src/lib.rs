@@ -368,6 +368,7 @@ pub fn import_jsonl(text: &str, format: &str) -> Result<Conversation, String> {
     let mut native_ids = HashMap::new();
     let mut pending = Vec::new();
     let mut previous_codex_message: Option<String> = None;
+    let mut previous_record: Option<String> = None;
     for original in source {
         let normalized = if format == "codex" {
             normalize_codex(&original)
@@ -385,17 +386,30 @@ pub fn import_jsonl(text: &str, format: &str) -> Result<Conversation, String> {
             native_format: Some(format.into()),
             original: Some(original.clone()),
         };
-        graph.append_node(
-            node,
-            if format == "codex" && is_message {
-                previous_codex_message.as_deref()
-            } else {
-                None
-            },
-        )?;
+        graph.nodes.push(node);
+        graph.links.push(Link {
+            source: graph.nodes[0].id.clone(),
+            kind: "contains".into(),
+            target: id.clone(),
+        });
+        if let Some(previous) = &previous_record {
+            graph.links.push(Link {
+                source: previous.clone(),
+                kind: "precedes".into(),
+                target: id.clone(),
+            });
+        }
         if format == "codex" && is_message {
+            if let Some(previous) = &previous_codex_message {
+                graph.links.push(Link {
+                    source: previous.clone(),
+                    kind: "reply_to".into(),
+                    target: id.clone(),
+                });
+            }
             previous_codex_message = Some(id.clone());
         }
+        previous_record = Some(id.clone());
         if format == "claude" && graph.nodes.last().unwrap().kind == "message" {
             if let Some(uuid) = original["uuid"].as_str() {
                 native_ids

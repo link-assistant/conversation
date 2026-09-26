@@ -27,13 +27,11 @@ export function createConversation(id, sourceFormat) {
 
 function orderedRecords(graph) {
   const conversation = root(graph);
+  const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
   const members = new Map(
     graph.links
       .filter((link) => link.type === 'contains')
-      .map((link) => [
-        link.target,
-        graph.nodes.find((node) => node.id === link.target),
-      ])
+      .map((link) => [link.target, nodes.get(link.target)])
   );
   if (members.size === 0) {
     return [];
@@ -318,14 +316,17 @@ function claudeMessage(record) {
 }
 
 function parseJsonl(text) {
-  const lines = text.split(/\r?\n/).filter((line) => line.trim());
-  return lines.map((line, index) => {
+  const lines = text.split(/\r?\n/);
+  return lines.flatMap((line, index) => {
+    if (!line.trim()) {
+      return [];
+    }
     try {
       const record = JSON.parse(line);
       if (!isObject(record)) {
         throw new Error('Expected a JSON object');
       }
-      return record;
+      return [record];
     } catch (error) {
       throw new Error(`Invalid JSONL at line ${index + 1}: ${error.message}`);
     }
@@ -344,6 +345,7 @@ function importRecords(graph, parsed, format) {
   const nativeIds = new Map();
   const pendingParents = [];
   let previousCodexMessage;
+  let previousRecord;
   for (const original of parsed) {
     const normalized =
       format === 'codex' ? codexMessage(original) : claudeMessage(original);
@@ -354,14 +356,30 @@ function importRecords(graph, parsed, format) {
       nativeFormat: format,
       original,
     };
-    appendNode(
-      graph,
-      node,
-      format === 'codex' && normalized ? previousCodexMessage : undefined
-    );
+    graph.nodes.push(node);
+    graph.links.push({
+      source: graph.nodes[0].id,
+      type: 'contains',
+      target: node.id,
+    });
+    if (previousRecord) {
+      graph.links.push({
+        source: previousRecord,
+        type: 'precedes',
+        target: node.id,
+      });
+    }
     if (format === 'codex' && normalized) {
+      if (previousCodexMessage) {
+        graph.links.push({
+          source: previousCodexMessage,
+          type: 'reply_to',
+          target: node.id,
+        });
+      }
       previousCodexMessage = node.id;
     }
+    previousRecord = node.id;
     if (format === 'claude' && normalized) {
       if (typeof original.uuid === 'string' && !nativeIds.has(original.uuid)) {
         nativeIds.set(original.uuid, node.id);
