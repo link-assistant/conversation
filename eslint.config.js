@@ -124,6 +124,7 @@ export default [
   {
     ignores: [
       'node_modules/**',
+      'rust/target/**',
       '**/node_modules/**',
       'coverage/**',
       'dist/**',

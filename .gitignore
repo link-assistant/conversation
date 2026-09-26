@@ -141,3 +141,5 @@ vite.config.ts.timestamp-*
 
 # jscpd reports
 reports/
+rust/target/
+ci-logs/

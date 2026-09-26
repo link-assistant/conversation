@@ -1,16 +1,18 @@
 {
-  "name": "@link-foundation/example-package-name",
+  "name": "@link-assistant/conversation",
   "version": "0.11.30",
-  "description": "A JavaScript/TypeScript package template for AI-driven development",
+  "description": "Portable linked archives for AI agent conversations",
   "type": "module",
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "bin": {
+    "conversation": "./bin/conversation.js",
     "example-package-name": "./bin/example-package-name.js"
   },
   "files": [
     "bin/",
     "src/",
+    "docs/CONVERSATION-FORMAT.md",
     "CHANGELOG.md",
     "LICENSE",
     "README.md"
@@ -19,10 +21,16 @@
     ".": {
       "types": "./src/index.d.ts",
       "import": "./src/index.js"
+    },
+    "./conversation": {
+      "types": "./src/conversation.d.ts",
+      "import": "./src/conversation.js"
     }
   },
   "scripts": {
     "test": "node --test --test-timeout=30000 tests/*.test.js",
+    "test:rust": "cargo test --manifest-path rust/Cargo.toml",
+    "test:cross": "node experiments/cross-language.mjs",
     "lint": "node scripts/lint.mjs",
     "lint:all": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -44,7 +52,9 @@
     "changeset:status": "changeset status --since=origin/main"
   },
   "keywords": [
-    "template",
+    "conversation",
+    "links-notation",
+    "agent",
     "javascript",
     "typescript",
     "ai-driven"
@@ -61,7 +71,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/link-foundation/js-ai-driven-development-pipeline-template.git"
+    "url": "git+https://github.com/link-assistant/conversation.git"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -87,5 +97,8 @@
       "prettier --write",
       "prettier --check"
     ]
+  },
+  "dependencies": {
+    "lino-objects-codec": "^0.7.0"
   }
 }

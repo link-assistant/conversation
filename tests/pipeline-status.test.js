@@ -15,6 +15,7 @@ const workflowNames = [
   'security.yml',
   'workflows.yml',
   'example-app.yml',
+  'conversation.yml',
 ];
 const gatedWorkflows = Object.fromEntries(
   workflowNames.map((name) => [
@@ -225,6 +226,7 @@ describe('pipeline status gate in every workflow', () => {
       'security.yml',
       'workflows.yml',
       'example-app.yml',
+      'conversation.yml',
     ]) {
       const gate = getJobBlock(gatedWorkflows[name], 'pipeline-status');
 

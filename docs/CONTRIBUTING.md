@@ -56,7 +56,7 @@ Tests should:
 # Run tests
 bun test --timeout 30000
 npm test
-deno test --allow-read
+deno test --allow-read --allow-env=LINO_CODEC_DEBUG
 ```
 
 ## Version Management with Changesets
