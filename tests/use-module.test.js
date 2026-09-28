@@ -399,6 +399,7 @@ describe('use-m load survives a stalled connection', () => {
     let error;
     try {
       await loadUse({
+        fetchImpl: fetch,
         url,
         attempts: 1,
         timeoutMs: 300,

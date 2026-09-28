@@ -1,10 +1,78 @@
-# js-ai-driven-development-pipeline-template
+# Conversation
 
-A comprehensive template for AI-driven JavaScript/TypeScript development with full CI/CD pipeline support.
+Portable linked archives for AI agent conversations. The first version provides
+JavaScript and Rust libraries and CLIs, and adapters for Codex CLI and Claude
+Code JSONL sessions.
 
-This repository publishes the real test package
-`@link-foundation/example-package-name` so the template release pipeline is
-validated end to end with npm trusted publishing.
+The archive is a graph: a conversation node links to records with `contains`,
+records link to their successor with `precedes`, and messages can link to their
+parent with `reply_to`. Each imported source record is kept in full, while
+normalized roles and content blocks make cross-tool conversion possible. The
+same graph can be saved as JSON, readable Links Notation, or a portable binary
+link file. See [the format specification](docs/CONVERSATION-FORMAT.md).
+
+## Conversation quick start
+
+```bash
+npm install
+node bin/conversation.js import codex rollout.jsonl archive.lino
+node bin/conversation.js inspect archive.lino
+node bin/conversation.js export claude archive.lino claude-session.jsonl
+
+# Rust CLI with the same commands and archive format:
+cargo run --manifest-path rust/Cargo.toml -- import claude session.jsonl archive.bin
+```
+
+The CLI also accepts `.json` archives. Add `--force` to replace an existing
+output file. `convert <source> <target> <input.jsonl> <output.jsonl>` performs
+an import and export in one command. Source and target are `codex` or `claude`.
+
+JavaScript API:
+
+```js
+import {
+  importJsonl,
+  encodeLino,
+  decodeLino,
+  exportJsonl,
+} from '@link-assistant/conversation/conversation';
+
+const graph = importJsonl(codexSession, 'codex');
+const saved = encodeLino(graph);
+const claudeSession = exportJsonl(decodeLino(saved), 'claude');
+```
+
+Rust API:
+
+```rust
+use link_assistant_conversation::{import_jsonl, encode_lino, export_jsonl};
+
+let graph = import_jsonl(&codex_session, "codex")?;
+let saved = encode_lino(&graph)?;
+let claude_session = export_jsonl(&graph, "claude")?;
+```
+
+Same-format export keeps every imported JSON record, including metadata and
+tool events. Cross-format export maps text, tool calls, and tool results.
+Unknown native content remains in the archive and produces an explicit error
+if the target cannot represent it. Generated native JSONL is an initial
+interchange format; loading it as a resumable session in each vendor app still
+requires tool-specific validation and metadata support.
+
+## Development checks
+
+```bash
+npm test
+npm run check
+npm run test:rust
+npm run test:cross
+```
+
+## Repository infrastructure
+
+The sections below describe the inherited CI pipeline and universal app
+example. The calculator functions and example CLI remain available during the
+transition from the repository template.
 
 ## Features
 
@@ -19,13 +87,11 @@ validated end to end with npm trusted publishing.
 
 ## Quick Start
 
-### Using This Template
+### Using This Repository
 
-1. Click "Use this template" on GitHub to create a new repository
-2. Clone your new repository
-3. Update `package.json` with your package name and description
-4. Install dependencies: `bun install`
-5. Start developing!
+1. Clone the repository.
+2. Install dependencies with `npm install` or `bun install`.
+3. Import a Codex or Claude Code JSONL session with the commands above.
 
 ### Development
 
@@ -38,7 +104,7 @@ bun test --timeout 30000
 
 # Or with other runtimes:
 npm test
-deno test --allow-read
+deno test --allow-read --allow-env=LINO_CODEC_DEBUG
 
 # Lint code
 bun run lint
@@ -268,15 +334,10 @@ Add regex patterns to `.lycheeignore` to exclude URLs from checks (e.g., local d
 
 ## Configuration
 
-### Updating Package Name
+### Package Name
 
-After creating a repository from this template, update the package name in:
-
-1. `package.json`: replace `"@link-foundation/example-package-name"` with your package name
-2. `.changeset/config.json`: Package references
-
-Release scripts derive the package name from `package.json` at runtime, so no
-script-level package-name constants need to be edited during template adoption.
+The JavaScript package is `@link-assistant/conversation`. Release scripts derive
+the package name from `package.json` at runtime.
 
 ### Protected-Branch Release Pull Requests
 

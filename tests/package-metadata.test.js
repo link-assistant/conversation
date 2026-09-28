@@ -16,19 +16,19 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const lockJson = JSON.parse(readFileSync('package-lock.json', 'utf8'));
 
 describe('publishable package metadata', () => {
-  it('uses the real link-foundation example package name', () => {
-    expect(packageJson.name).toBe('@link-foundation/example-package-name');
+  it('uses the conversation package name', () => {
+    expect(packageJson.name).toBe('@link-assistant/conversation');
     expect(packageJson.publishConfig).toEqual({ access: 'public' });
-    expect(lockJson.name).toBe('@link-foundation/example-package-name');
-    expect(lockJson.packages[''].name).toBe(
-      '@link-foundation/example-package-name'
-    );
+    expect(lockJson.name).toBe('@link-assistant/conversation');
+    expect(lockJson.packages[''].name).toBe('@link-assistant/conversation');
   });
 
   it('defines a globally installable CLI command', () => {
     expect(packageJson.bin).toEqual({
+      conversation: './bin/conversation.js',
       'example-package-name': './bin/example-package-name.js',
     });
+    expect(existsSync('bin/conversation.js')).toBe(true);
     expect(existsSync('bin/example-package-name.js')).toBe(true);
   });
 
@@ -87,6 +87,7 @@ describe('publishable package metadata', () => {
     expect(packageJson.files).toEqual([
       'bin/',
       'src/',
+      'docs/CONVERSATION-FORMAT.md',
       'CHANGELOG.md',
       'LICENSE',
       'README.md',

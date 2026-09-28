@@ -7,6 +7,7 @@ function readWorkflow(filePath) {
 
 const activeWorkflows = [
   '.github/workflows/example-app.yml',
+  '.github/workflows/conversation.yml',
   '.github/workflows/links.yml',
   '.github/workflows/release.yml',
   '.github/workflows/security.yml',
@@ -127,6 +128,9 @@ describe('third-party actions', () => {
     for (const [filePath, workflow] of Object.entries({
       '.github/workflows/release.yml': releaseWorkflow,
       '.github/workflows/example-app.yml': exampleAppWorkflow,
+      '.github/workflows/conversation.yml': readWorkflow(
+        '.github/workflows/conversation.yml'
+      ),
       '.github/workflows/workflows.yml': workflowsWorkflow,
       '.github/workflows/links.yml': readWorkflow(
         '.github/workflows/links.yml'
@@ -166,6 +170,9 @@ describe('third-party actions', () => {
     for (const [filePath, workflow] of Object.entries({
       '.github/workflows/release.yml': releaseWorkflow,
       '.github/workflows/example-app.yml': exampleAppWorkflow,
+      '.github/workflows/conversation.yml': readWorkflow(
+        '.github/workflows/conversation.yml'
+      ),
       '.github/workflows/workflows.yml': workflowsWorkflow,
       '.github/workflows/links.yml': readWorkflow(
         '.github/workflows/links.yml'

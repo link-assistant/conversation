@@ -5,6 +5,7 @@
   "skipComments": true,
   "ignore": [
     "**/node_modules/**",
+    "**/rust/target/**",
     "**/build/**",
     "**/dist/**",
     "**/*.min.js",
