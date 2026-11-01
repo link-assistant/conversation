@@ -143,10 +143,10 @@ function writeOutputs(outputs, outputFile) {
   }
 }
 
-function runCargoPublish(manifest, token, spawn) {
+function runCargoPublish(manifest, token, spawn, env) {
   return spawn('cargo', ['publish', '--manifest-path', manifest, '--locked'], {
     stdio: 'inherit',
-    env: { ...process.env, CARGO_REGISTRY_TOKEN: token },
+    env: { ...env, CARGO_REGISTRY_TOKEN: token },
   });
 }
 
@@ -171,7 +171,7 @@ async function publishCrate({
   }
 
   log(`Publishing ${label} to crates.io`);
-  const result = runCargoPublish(manifest, token, spawn);
+  const result = runCargoPublish(manifest, token, spawn, env);
 
   if (result.status === 0) {
     log(
