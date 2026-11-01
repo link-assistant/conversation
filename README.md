@@ -68,6 +68,34 @@ npm run test:rust
 npm run test:cross
 ```
 
+## Rust crate releases
+
+The Rust library and CLI are published to crates.io as
+[`link-assistant-conversation`](https://crates.io/crates/link-assistant-conversation):
+
+```bash
+cargo add link-assistant-conversation
+cargo install link-assistant-conversation
+```
+
+`.github/workflows/conversation.yml` publishes `rust/Cargo.toml` from `main`
+whenever its `version` is not on crates.io yet, so bumping that version is the
+release trigger. Pull requests run `cargo publish --dry-run` to verify the
+package. Publishing uses trusted publishing (OIDC) first, through
+`rust-lang/crates-io-auth-action`, and falls back to the
+`CARGO_REGISTRY_TOKEN` or `CARGO_TOKEN` secret only when OIDC returns no token.
+
+The first version needs a crates.io owner to run once:
+
+```bash
+package-registry-manager setup --repository . --registry crates-io --execute
+```
+
+It publishes the first version with a short-lived crate-scoped token, revokes
+it, and registers `conversation.yml` as the trusted publisher. Later versions
+publish from CI with no secret. Until then, the publish job on `main` fails
+with these instructions unless a fallback token secret is set.
+
 ## Repository infrastructure
 
 The sections below describe the inherited CI pipeline and universal app

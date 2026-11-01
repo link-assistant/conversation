@@ -6,6 +6,14 @@ rust-version = "1.85"
 description = "Portable link graph for AI conversations"
 license = "Unlicense"
 repository = "https://github.com/link-assistant/conversation"
+homepage = "https://github.com/link-assistant/conversation"
+documentation = "https://docs.rs/link-assistant-conversation"
+readme = "../README.md"
+keywords = ["conversation", "links-notation", "agent", "codex", "claude"]
+categories = ["command-line-utilities", "encoding", "parser-implementations"]
+# Published to crates.io by .github/workflows/conversation.yml (trusted
+# publishing first, CARGO_REGISTRY_TOKEN / CARGO_TOKEN fallback) whenever this
+# version is not on crates.io yet. Bump it to release a new crate version.
 
 [dependencies]
 lino-objects-codec = "0.7.0"
